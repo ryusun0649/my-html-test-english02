@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英単語スライド学習</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #60a5fa, #a78bfa, #f472b6);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      text-align: center;
+    }
+    .word {
+      font-size: 4rem;
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+    .katakana {
+      font-size: 2rem;
+      margin-bottom: 1em;
+    }
+    .japanese {
+      font-size: 2rem;
+      margin-top: 1em;
+      opacity: 0.8;
+    }
+    .controls {
+      margin-top: 2em;
+    }
+    button {
+      padding: 1em 2em;
+      margin: 0 1em;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: rgba(255,255,255,0.2);
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="count">1 / 25</div>
+  <div class="word" id="english">buy</div>
+  <div class="katakana" id="katakana">バイ</div>
+  <div class="japanese" id="japanese" style="display:none;">〜を買う</div>
+  <div class="controls">
+    <button onclick="repeat()">リピート</button>
+    <button onclick="next()">次へ</button>
+  </div>
+
+  <script>
+    const vocabulary = [
+      { english: "buy", japanese: "〜を買う", katakana: "バイ" },
+      { english: "clean", japanese: "〜を掃除する", katakana: "クリーン" },
+      { english: "drink", japanese: "〜を飲む", katakana: "ドリンク" },
+      { english: "enjoy", japanese: "〜を楽しむ", katakana: "エンジョイ" },
+      { english: "have", japanese: "〜を持っている", katakana: "ハブ" },
+      { english: "know", japanese: "〜を知っている", katakana: "ノウ" },
+      { english: "listen", japanese: "聞く", katakana: "リスン" },
+      { english: "look", japanese: "見る、目を向ける", katakana: "ルック" },
+      { english: "make", japanese: "〜を作る、得る", katakana: "メイク" },
+      { english: "practice", japanese: "〜を練習する", katakana: "プラクティス" },
+      { english: "ride", japanese: "〜に乗る、乗って行く", katakana: "ライド" },
+      { english: "run", japanese: "走る、運行している", katakana: "ラン" },
+      { english: "see", japanese: "〜が見える、〜を見る", katakana: "シー" },
+      { english: "sing", japanese: "〜を歌う", katakana: "シング" },
+      { english: "speak", japanese: "話す", katakana: "スピーク" },
+      { english: "stop", japanese: "止まる、停止する", katakana: "ストップ" },
+      { english: "study", japanese: "〜を勉強する、研究する", katakana: "スタディ" },
+      { english: "use", japanese: "〜を使う、利用する", katakana: "ユーズ" },
+      { english: "visit", japanese: "〜を訪ねる", katakana: "ビジット" },
+      { english: "walk", japanese: "〜を歩く、歩いて行く", katakana: "ウォーク" },
+      { english: "school", japanese: "学校", katakana: "スクール" },
+      { english: "teacher", japanese: "先生、教師", katakana: "ティーチャー" },
+      { english: "homework", japanese: "宿題", katakana: "ホームワーク" },
+      { english: "subject", japanese: "科目、教科", katakana: "サブジェクト" },
+      { english: "Japanese", japanese: "日本語", katakana: "ジャパニーズ" }
+    ];
+
+    let index = 0;
+
+    async function speak(text, lang) {
+      return new Promise((resolve) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+        utterance.onend = resolve;
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+    async function play() {
+      const word = vocabulary[index];
+      document.getElementById("english").textContent = word.english;
+      document.getElementById("katakana").textContent = word.katakana;
+      document.getElementById("japanese").style.display = "none";
+      document.getElementById("count").textContent = (index + 1) + " / " + vocabulary.length;
+
+      await speak(word.english, 'en-US');
+      await speak(word.english, 'en-US');
+      document.getElementById("japanese").style.display = "block";
+      await speak(word.japanese, 'ja-JP');
+    }
+
+    function repeat() {
+      window.speechSynthesis.cancel();
+      play();
+    }
+
+    function next() {
+      if (index < vocabulary.length - 1) {
+        index++;
+        play();
+      }
+    }
+
+    play(); // 最初の単語を再生
+  </script>
+</body>
+</html>
